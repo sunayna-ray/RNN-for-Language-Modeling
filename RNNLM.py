@@ -231,7 +231,7 @@ def load_data(debug=False):
   return encoded_train, encoded_valid, encoded_test, vocab
 
 
-def compute_loss(ouputs, y, criterion):
+def compute_loss(outputs, y, criterion):
   """Compute the loss given the ouput, ground truth y, and the criterion function.
 
   Hint: criterion should be cross entropy.
@@ -244,7 +244,9 @@ def compute_loss(ouputs, y, criterion):
     output: A 0-d tensor--averaged loss (scalar)
   """ 
   ### YOUR CODE HERE
-
+  y_hat = torch.stack(outputs, dim=1).flatten(start_dim=0,end_dim=1)
+  y=y.flatten()
+  loss = criterion(y_hat, y)
   ### END YOUR CODE
   return loss
 
@@ -266,8 +268,8 @@ def run_epoch(our_model, config, model_optimizer, criterion, data, mode='train',
       x = torch.from_numpy(x).type(torch.LongTensor)
       y = torch.from_numpy(y).type(torch.LongTensor)
       ## if you are using cpu, do not attach x,y to cuda. 
-      x = x.cuda()
-      y = y.cuda()
+      x = x#.cuda()
+      y = y#.cuda()
       outputs, state = our_model(x, state)
       loss = compute_loss(outputs, y, criterion)
       if mode=='train':
@@ -291,14 +293,14 @@ def test_RNNLM():
   config.vocab_size= len(vocab)
   ### Initialize the model. If you are using cpu, do not attach model to cuda.  
   our_model = RNNLM_Model(config)
-  our_model.cuda()
+  our_model#.cuda()
 
   ### define the loss (criterion), optimizer
   ### Hint: the criterion should be CE and SGD might be a good choice for optimizer. 
 
   ### YOUR CODE HERE
-  criterion = 
-  model_optimizer = 
+  criterion = nn.CrossEntropyLoss()#weight=weights)
+  model_optimizer = torch.optim.SGD(params=our_model.parameters(),lr=config.lr)
   ### END YOUR CODE
 
   best_val_pp = float('inf')
