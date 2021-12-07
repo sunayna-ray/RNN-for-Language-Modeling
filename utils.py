@@ -3,6 +3,8 @@ from torch.nn.parameter import Parameter
 import torch.nn as nn
 import numpy as np
 
+import matplotlib.pyplot as plt
+
 class Vocab(object):
   def __init__(self):
     self.word_to_index = {}
@@ -138,3 +140,16 @@ def weights_init(m):
   for name, p in m.named_parameters():
      if '.' not in name:
          _param_init(p)
+
+
+
+def plot_results(results):
+    plots=[{"Perplexity vs epochs" : ["validation_pp", "training_pp"]}]
+    fig, axes = plt.subplots(len(plots), figsize = (10,10))
+    graphs = ['validation_pp', 'training_pp']
+    axes.se_title = "Perplexity vs epochs"
+    axes.legend = graphs
+    axes
+    for graph in graphs:
+      axes.plot([result[graph] for result in results], '-x')
+    plt.savefig('results_plot.png')

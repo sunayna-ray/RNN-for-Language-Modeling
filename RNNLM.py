@@ -8,7 +8,7 @@ from copy import deepcopy
 
 from utils import calculate_perplexity, get_ptb_dataset, Vocab
 from utils import ptb_iterator, sample
-from utils import weights_init
+from utils import weights_init, plot_results
 
 import torch
 import torch.nn as nn
@@ -299,13 +299,13 @@ def test_RNNLM():
   ### Hint: the criterion should be CE and SGD might be a good choice for optimizer. 
 
   ### YOUR CODE HERE
-  criterion = nn.CrossEntropyLoss()#weight=weights)
+  criterion = nn.CrossEntropyLoss()
   model_optimizer = torch.optim.SGD(params=our_model.parameters(),lr=config.lr)
   ### END YOUR CODE
 
   best_val_pp = float('inf')
   best_val_epoch = 0
-  
+  results=[]
   for epoch in range(config.max_epochs):
     print('Epoch {}'.format(epoch))
     start = time.time()
@@ -320,7 +320,10 @@ def test_RNNLM():
       torch.save(state, './ckpt.pth')
     if epoch - best_val_epoch > config.early_stopping:
       break
-    print('Total time: {}'.format(time.time() - start))
+    total_time=time.time() - start
+    print('Total time: {}'.format(total_time))
+    results.append({'training_pp': train_pp, "validation_pp": valid_pp, "total_time":total_time})
+  plot_results(results)
     
   ## After training, we load the model and test it.  
   checkpoint = torch.load('./ckpt.pth')
