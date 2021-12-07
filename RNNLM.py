@@ -3,6 +3,7 @@ import time
 import os
 
 import numpy as np
+import math
 from copy import deepcopy
 
 from utils import calculate_perplexity, get_ptb_dataset, Vocab
@@ -39,17 +40,19 @@ class RNNLM_Model(nn.Module):
     """Initialize the model."""
     super(RNNLM_Model, self).__init__()
     self.config = config
-
+    self.uniform_bound = math.sqrt(config.hidden_size)
     ### YOUR CODE HERE
     ### Define the Embedding layer. Hint: check nn.Embedding
-
+    self.embedding = nn.Embedding(config.vocab_size, config.embed_size)
     ### Define the H, I, b1 in HW4. Hint: check nn.Parameter
-
+    self.H = nn.Parameter(torch.FloatTensor(config.hidden_size,config.hidden_size).uniform_(-1*self.uniform_bound, self.uniform_bound)) #Hidden-Hidden Weight : W_h
+    self.I = nn.Parameter(torch.FloatTensor(config.embed_size, config.hidden_size).uniform_(-1*self.uniform_bound, self.uniform_bound)) #Embedding-Hidden Weight : W_e
+    self.b1 = nn.Parameter(torch.zeros((1,config.hidden_size)))
     ### Define the projection layer, U, b2 in HW4
 
     ## Define the input dropout and output dropout.
-    self.input_drop = 
-    self.output_drop = 
+    self.input_drop = nn.Dropout(p=config.dropout)
+    self.output_drop = nn.Dropout(p=config.dropout)
     ### END YOUR CODE
 
     ## Initialize the weights. 
