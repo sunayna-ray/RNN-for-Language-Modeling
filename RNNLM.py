@@ -49,6 +49,9 @@ class RNNLM_Model(nn.Module):
     self.I = nn.Parameter(torch.FloatTensor(config.embed_size, config.hidden_size).uniform_(-1*self.uniform_bound, self.uniform_bound)) #Embedding-Hidden Weight : W_e
     self.b1 = nn.Parameter(torch.zeros((1,config.hidden_size)))
     ### Define the projection layer, U, b2 in HW4
+    self.softmax = nn.Softmax(dim=0)
+    self.U = nn.Parameter(torch.FloatTensor(config.hidden_size, config.vocab_size).uniform_(-1*self.uniform_bound, self.uniform_bound))
+    self.b2 = nn.Parameter(torch.zeros((1,config.vocab_size)))
 
     ## Define the input dropout and output dropout.
     self.input_drop = nn.Dropout(p=config.dropout)
@@ -66,7 +69,7 @@ class RNNLM_Model(nn.Module):
     #First, we need to perform embedding lookup using the embedding matrix.
     input_x = self.add_embedding(input_x)
     #Next, compute the hidden states for different steps 
-    rnn_outputs, last_state = self.add_model(input_x, initial_state)
+    rnn_outputs, final_state = self.add_model(input_x, initial_state)
     #Compute the prediction of different steps 
     outputs = self.add_projection(rnn_outputs)
     return outputs, final_state
