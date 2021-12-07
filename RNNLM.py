@@ -49,7 +49,6 @@ class RNNLM_Model(nn.Module):
     self.I = nn.Parameter(torch.FloatTensor(config.embed_size, config.hidden_size).uniform_(-1*self.uniform_bound, self.uniform_bound)) #Embedding-Hidden Weight : W_e
     self.b1 = nn.Parameter(torch.zeros((1,config.hidden_size)))
     ### Define the projection layer, U, b2 in HW4
-    self.softmax = nn.Softmax(dim=0)
     self.U = nn.Parameter(torch.FloatTensor(config.hidden_size, config.vocab_size).uniform_(-1*self.uniform_bound, self.uniform_bound))
     self.b2 = nn.Parameter(torch.zeros((1,config.vocab_size)))
 
@@ -120,10 +119,10 @@ class RNNLM_Model(nn.Module):
     rnn_outputs = []
     hidden_state = initial_state
     for inx in input_x:
-      sum = torch.matmul(hidden_state,self.H) + torch.matmul(inx,self.I) + self.b1
-      hidden_state = torch.sigmoid(sum)
+      hidden_state = nn.functional.sigmoid(
+        torch.matmul(hidden_state,self.H) + torch.matmul(inx,self.I) + self.b1)
       rnn_outputs.append(self.output_drop(hidden_state))
-      
+
     final_state=hidden_state
     ### END YOUR CODE
     return rnn_outputs, final_state
@@ -143,7 +142,10 @@ class RNNLM_Model(nn.Module):
                (batch_size, len(vocab))
     """
     ### YOUR CODE HERE
-
+    outputs = []
+    for hidden_state in rnn_outputs:
+      out = nn.functional.softmax(torch.matmul(hidden_state,self.U) + self.b2)
+      outputs.append(out)
     ### END YOUR CODE
     return outputs
 
@@ -154,7 +156,7 @@ class RNNLM_Model(nn.Module):
         Hint: If you are using GPU, the init_hidden should be attached to cuda.
     """
     ### YOUR CODE HERE
-
+    init_state = torch.zeros((self.config.batch_size, self.config.hidden_size))#, device='cuda')
     ### END YOUR CODE
     return init_state
     
