@@ -24,13 +24,13 @@ class Config(object):
   """
   ### YOUR CODE HERE
   batch_size = 64
-  embed_size = 50
-  hidden_size = 100
+  embed_size = 64
+  hidden_size = 128
   num_steps = 10 # RNN is unfolded into 'num_steps' time steps for training
-  max_epochs = 1 # the number of max epoch
-  early_stopping = 2
-  dropout = 0.1
-  lr = 0.01
+  max_epochs = 15 # the number of max epoch
+  early_stopping = 3
+  dropout = 0
+  lr = 1e-4
   vocab_size= 0
   ### END YOUR CODE
 
@@ -144,7 +144,7 @@ class RNNLM_Model(nn.Module):
     ### YOUR CODE HERE
     outputs = []
     for hidden_state in rnn_outputs:
-      out = nn.functional.softmax(torch.matmul(hidden_state,self.U) + self.b2)
+      out = torch.matmul(hidden_state,self.U) + self.b2
       outputs.append(out)
     ### END YOUR CODE
     return outputs
