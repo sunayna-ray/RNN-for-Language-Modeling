@@ -156,7 +156,7 @@ class RNNLM_Model(nn.Module):
         Hint: If you are using GPU, the init_hidden should be attached to cuda.
     """
     ### YOUR CODE HERE
-    init_state = torch.zeros((self.config.batch_size, self.config.hidden_size))#, device='cuda')
+    init_state = torch.zeros((self.config.batch_size, self.config.hidden_size), device='cuda')
     ### END YOUR CODE
     return init_state
     
@@ -268,8 +268,8 @@ def run_epoch(our_model, config, model_optimizer, criterion, data, mode='train',
       x = torch.from_numpy(x).type(torch.LongTensor)
       y = torch.from_numpy(y).type(torch.LongTensor)
       ## if you are using cpu, do not attach x,y to cuda. 
-      x = x#.cuda()
-      y = y#.cuda()
+      x = x.cuda()
+      y = y.cuda()
       outputs, state = our_model(x, state)
       loss = compute_loss(outputs, y, criterion)
       if mode=='train':
@@ -293,7 +293,7 @@ def test_RNNLM():
   config.vocab_size= len(vocab)
   ### Initialize the model. If you are using cpu, do not attach model to cuda.  
   our_model = RNNLM_Model(config)
-  our_model#.cuda()
+  our_model.cuda()
 
   ### define the loss (criterion), optimizer
   ### Hint: the criterion should be CE and SGD might be a good choice for optimizer. 
