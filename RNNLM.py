@@ -89,7 +89,7 @@ class RNNLM_Model(nn.Module):
               a tensor of shape (batch_size, embed_size).
     """
     ### YOUR CODE HERE
-
+    input_x = [self.embedding(input_x[:,x]) for x in range(self.config.num_steps)]
     ### END YOUR CODE
     return input_x
 
@@ -117,7 +117,14 @@ class RNNLM_Model(nn.Module):
     input_x = [self.input_drop(x) for x in input_x]
 
     ### YOUR CODE HERE
-
+    rnn_outputs = []
+    hidden_state = initial_state
+    for inx in input_x:
+      sum = torch.matmul(hidden_state,self.H) + torch.matmul(inx,self.I) + self.b1
+      hidden_state = torch.sigmoid(sum)
+      rnn_outputs.append(self.output_drop(hidden_state))
+      
+    final_state=hidden_state
     ### END YOUR CODE
     return rnn_outputs, final_state
 
