@@ -24,13 +24,13 @@ class Config(object):
   """
   ### YOUR CODE HERE
   batch_size = 64
-  embed_size = 128
-  hidden_size = 256
+  embed_size = 256
+  hidden_size = 512
   num_steps = 7 # RNN is unfolded into 'num_steps' time steps for training
   max_epochs = 150 # the number of max epoch
-  early_stopping = 4
-  dropout = 0.1
-  lr = 1e-2
+  early_stopping = 3
+  dropout = 0.2
+  lr = 1e-3
   vocab_size= 0
   optimizer_weight_decay=1e-6
   ### END YOUR CODE
