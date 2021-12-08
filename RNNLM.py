@@ -301,7 +301,7 @@ def test_RNNLM():
 
   ### YOUR CODE HERE
   criterion = nn.CrossEntropyLoss()
-  model_optimizer = torch.optim.SGD(params=our_model.parameters(),lr=config.lr, weight_decay=config.optimizer_weight_decay)
+  model_optimizer = torch.optim.Adam(params=our_model.parameters(),lr=config.lr, weight_decay=config.optimizer_weight_decay)
   max_epochs=config.max_epochs
   scheduler = torch.optim.lr_scheduler.MultiStepLR(model_optimizer, milestones=[math.floor(max_epochs/2), math.floor(3*max_epochs/4)], gamma=0.1)
   ### END YOUR CODE
