@@ -24,14 +24,15 @@ class Config(object):
   """
   ### YOUR CODE HERE
   batch_size = 64
-  embed_size = 64
-  hidden_size = 128
-  num_steps = 10 # RNN is unfolded into 'num_steps' time steps for training
-  max_epochs = 15 # the number of max epoch
-  early_stopping = 3
-  dropout = 0
-  lr = 1e-4
+  embed_size = 128
+  hidden_size = 256
+  num_steps = 7 # RNN is unfolded into 'num_steps' time steps for training
+  max_epochs = 150 # the number of max epoch
+  early_stopping = 4
+  dropout = 0.1
+  lr = 1e-2
   vocab_size= 0
+  optimizer_weight_decay=1e-6
   ### END YOUR CODE
 
 class RNNLM_Model(nn.Module):
@@ -245,7 +246,7 @@ def compute_loss(outputs, y, criterion):
   """ 
   ### YOUR CODE HERE
   y_hat = torch.stack(outputs, dim=1).flatten(start_dim=0,end_dim=1)
-  y=y.flatten()
+  y=torch.flatten(y)
   loss = criterion(y_hat, y)
   ### END YOUR CODE
   return loss
@@ -300,7 +301,9 @@ def test_RNNLM():
 
   ### YOUR CODE HERE
   criterion = nn.CrossEntropyLoss()
-  model_optimizer = torch.optim.SGD(params=our_model.parameters(),lr=config.lr)
+  model_optimizer = torch.optim.SGD(params=our_model.parameters(),lr=config.lr, weight_decay=config.optimizer_weight_decay)
+  max_epochs=config.max_epochs
+  scheduler = torch.optim.lr_scheduler.MultiStepLR(model_optimizer, milestones=[math.floor(max_epochs/2), math.floor(3*max_epochs/4)], gamma=0.1)
   ### END YOUR CODE
 
   best_val_pp = float('inf')
@@ -323,6 +326,7 @@ def test_RNNLM():
     total_time=time.time() - start
     print('Total time: {}'.format(total_time))
     results.append({'training_pp': train_pp, "validation_pp": valid_pp, "total_time":total_time})
+    scheduler.step()
   plot_results(results)
     
   ## After training, we load the model and test it.  
